@@ -102,10 +102,6 @@ mkdir -p "$USER_HOME/.kube"
 cp -i /etc/kubernetes/admin.conf "$USER_HOME/.kube/config"
 chown "$USER_UID:$USER_GID" "$USER_HOME/.kube/config"
 
-# Quick verify (node will show NotReady until CNI is installed)
-echo "Initial cluster status (expect NotReady until Calico is applied):"
-kubectl get nodes
-
 # Install Calico CNI
 echo "Installing Calico CNI ${CALICO_VER}..."
 ./install-calico.sh "$CALICO_VER"
@@ -118,8 +114,10 @@ echo "Installing MetalLB ${MetalLB_VER} (Layer 2 mode)..."
 # ./install-traefik.sh
 
 # Final verify
-echo "Final check after CNI (run after installing Calico):"
+# Set kube-config for this script's context
+export KUBECONFIG=/etc/kubernetes/admin.conf
 kubectl get nodes
+echo "Final check after CNI (run after installing Calico):"
 kubectl get pods -A
 
 echo "Logs saved to kubeadm-init.log"
