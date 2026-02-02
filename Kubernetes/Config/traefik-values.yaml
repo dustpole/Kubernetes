@@ -1,0 +1,59 @@
+deployment:
+  kind: DaemonSet              # <-- Changed: one pod per node automatically
+  replicas: 1                  # Ignored for DaemonSet, but harmless to keep
+  # Optional: add pod anti-affinity if you ever switch back to Deployment
+  # affinity: {}               # defaults often include anti-affinity when hostNetwork=true
+
+service:
+  type: LoadBalancer           # MetalLB will give this one stable external IP
+  spec:
+    loadBalancerIP: ""         # Leave empty → MetalLB assigns from pool; or set a static one from your MetalLB range
+  # Optional: if you use specific MetalLB address pools
+  # annotations:
+  #   metallb.universe.tf/address-pool: traefik-pool   # if you defined named pools
+
+ports:
+  web:
+    port: 80                 # container port
+    exposedPort: 80
+    protocol: TCP
+    # hostPort: 80           # ← Do NOT set unless you really need direct host binding (avoid for now)
+  websecure:
+    port: 443
+    exposedPort: 443
+    protocol: TCP
+    # hostPort: 443          # ← Same: avoid unless necessary
+
+logs:
+  general:
+    level: INFO              # Change to DEBUG temporarily if troubleshooting
+
+providers:
+  kubernetesCRD:
+    enabled: true
+  kubernetesIngress:
+    enabled: true
+
+dashboard:
+  enabled: true              # Keep for now; secure it later (basicAuth middleware or disable)
+
+# HTTP → HTTPS redirection (good default)
+additionalArguments:
+  - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+  - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+  - "--log.level=INFO"
+
+# Optional: If you want persistence for ACME (Let's Encrypt) later
+# persistence:
+#   enabled: true
+#   path: /data
+#   size: 128Mi
+
+# Optional: Resource limits (adjust based on your nodes)
+# resources:
+#   requests:
+#     cpu: "100m"
+#     memory: "128Mi"
+#   limits:
+#     cpu: "500m"
+#     memory: "512Mi"
