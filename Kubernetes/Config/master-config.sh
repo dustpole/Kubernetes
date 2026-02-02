@@ -3,6 +3,9 @@
 # Written by Dustin Pollreis
 
 # Variables
+KUBERNETES_VER="v1.35"
+CALICO_VER="v3.28"
+MetalLB_VER="v0.15.3"
 
 # Install basic tools
 sudo apt install iputils-ping dnsutils htop tree git
@@ -56,10 +59,10 @@ sudo systemctl enable containerd
 sudo apt update && sudo apt install -y apt-transport-https ca-certificates curl gpg
 
 # Download the GPG key for the repo and dearmor it 
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VER/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 # Add the Kubernetes repo entry
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VER/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 # Refresh package list
 sudo apt update
@@ -72,26 +75,15 @@ sudo kubeadm init --config init-config.yaml --upload-certs
 
 # Configure kubectl
 mkdir -p $HOME/.kube 
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
+sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config 
 sudo chown $$ (id -u): $$(id -g) $HOME/.kube/config
-
-# Join Cluster (On Worker)
-sudo kubeadm join 10.0.3.2:6443 \
---token uvfgky.y4ysivfcqiqa9q9j \
---discovery-token-ca-cert-hash sha256:4ad689c8abc82ee3e8d23284e6ccdc4b60ff43c1d0ca7bce301363ae2143c71b
-
-# Allow kubectl on worker
-mkdir -p ~/.kube
-scp dust@k8s-master-01:~/.kube/config config
-scp config dust@k8s-worker-01:~/.kube/config
-chmod 600 ~/.kube/config
 
 # Verify
 kubectl get nodes
 
 # Install Calico CNI
 kubectl apply -f \
-https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+"https://raw.githubusercontent.com/projectcalico/calico/$CALICO_VER/manifests/calico.yaml"
 
 # Verify
 kubectl get pods -n kube-system | grep calico
@@ -99,7 +91,7 @@ kubectl get pods -n kube-system | grep calico
 
 # Install MetalLB (Layer 2 Mode)
 kubectl apply -f \
-https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
+"https://raw.githubusercontent.com/metallb/metallb/$MetalLB_VER/config/manifests/metallb-native.yaml"
 
 # Verify
 kubectl get pods -n metallb-system
@@ -114,10 +106,9 @@ kubectl get pods -n metallb-system
 # Confirm the IP pool
 kubectl get ipaddresspools -n metallb-system
 
-
 # Test with a LoadBalancer service
-kubectl create deployment nginx --image=nginx
-kubectl expose deployment nginx --type=LoadBalancer --port=80
+# kubectl create deployment nginx --image=nginx
+# kubectl expose deployment nginx --type=LoadBalancer --port=80
 
 # Verify
-kubectl get svc nginx
+# kubectl get svc nginx
