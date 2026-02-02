@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: terraria
+spec:
+  serviceName: terraria
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terraria
+  template:
+    metadata:
+      labels:
+        app: terraria
+    spec:
+      nodeSelector:
+        terraria: "true"
+      containers:
+        - name: terraria
+          tty: "true"
+          stdin: "true"
+          image: ryshe/terraria:latest
+          ports:
+            - containerPort: 7777
+          command: ["bash"]
+          args:
+            - "-c"
+            - "TerrariaServer.bin.x86_64 -world /root/.local/share/Terraria/Worlds/Erathia.wld"
+          volumeMounts:
+            - name: terraria-data
+              mountPath: /root/.local/share/Terraria
+      volumes:
+        - name: terraria-data
+          persistentVolumeClaim:
+            claimName: terraria-pvc
