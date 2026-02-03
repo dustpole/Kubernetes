@@ -15,7 +15,7 @@ echo "Starting Kubernetes 1.35 single-node setup..."
 
 # Install basic tools
 apt-get update
-apt-get install -y iputils-ping dnsutils htop tree git #ufw
+apt-get install -y iputils-ping dnsutils htop tree git apache2-utils #ufw
 
 # Set timezone (Chicago)
 timedatectl set-timezone America/Chicago
@@ -90,7 +90,7 @@ cp ./kube-audit-policy.yaml /etc/kubernetes/audit-policy.yaml
 
 # Run kubeadm init with your config
 echo "Running kubeadm init... (this may take a few minutes)"
-kubeadm init --config init-config.yaml --upload-certs | tee kubeadm-init.log
+kubeadm init --config init-config.yaml | tee kubeadm-init.log
 
 # Get the current user's home directory, UID, and GID
 USER_HOME=$(eval echo ~$SUDO_USER)
@@ -101,23 +101,82 @@ USER_GID=$(id -g $SUDO_USER)
 mkdir -p "$USER_HOME/.kube"
 cp -i /etc/kubernetes/admin.conf "$USER_HOME/.kube/config"
 chown "$USER_UID:$USER_GID" "$USER_HOME/.kube/config"
+mkdir -p "/root/.kube"
+cp /etc/kubernetes/admin.conf /root/.kube/config
+
+# Remove the master node taint to allow scheduling pods on control-plane node
+kubectl taint nodes k8s-master-02 node-role.kubernetes.io/control-plane:NoSchedule-
+
+sleep 10
 
 # Install Calico CNI
 echo "Installing Calico CNI ${CALICO_VER}..."
 ./install-calico.sh "$CALICO_VER"
 
+sleep 10
+
+# Verify Calico installation
+echo "Waiting for Calico pods to be in 'Running' state..."
+kubectl get pods -n kube-system | grep calico
+
 # Install MetalLB Load Balancer
 echo "Installing MetalLB ${MetalLB_VER} (Layer 2 mode)..."
 ./install-metallb.sh "$MetalLB_VER"
 
-# echo "Installing Traefik Ingress Controller..."
-# ./install-traefik.sh
+# Create the secret key for memberlist protocol
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 
-# Final verify
-# Set kube-config for this script's context
-export KUBECONFIG=/etc/kubernetes/admin.conf
-kubectl get nodes
-echo "Final check after CNI (run after installing Calico):"
-kubectl get pods -A
+sleep 30
+
+# Apply metallb config
+kubectl apply -f metallb-pool.yaml
+kubectl apply -f metallb-l2-advertisement.yaml
+
+sleep 10
+
+# Check MetalLB pods
+kubectl get pods -n metallb-system
+# Confirm the IP pool
+kubectl get ipaddresspools -n metallb-system
+
+# Install Helm
+echo "Installing Helm..."
+./install-helm.sh
+
+sleep 10
+
+# Install Traefik Ingress Controller
+echo "Installing Traefik Ingress Controller..."
+./install-traefik.sh
+
+sleep 10
+
+#  Show created secrets, middleware, ingressroutes
+echo "Traefik created resources:"
+kubectl -n traefik get secret,middleware,ingressroute
+
+sleep 10
+
+# Verify traefik installation
+kubectl get all -n traefik
+
+# Verify the service
+kubectl -n traefik get svc traefik
+
+# Get the external IP of the Traefik LoadBalancer
+echo "Traefik LoadBalancer external IP:"
+kubectl -n traefik get svc traefik -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+echo
+
+# Additional Traefik resources
+echo "Verifying Traefik resources..."
+echo "Middlewares:"
+kubectl get middleware -n traefik
+echo "IngressRoutes:"
+kubectl get ingressroute -n traefik
+echo "Pods in Traefik namespace:"
+kubectl get pods -n traefik
+echo "Services in Traefik namespace:"
+kubectl get svc -n traefik
 
 echo "Logs saved to kubeadm-init.log"

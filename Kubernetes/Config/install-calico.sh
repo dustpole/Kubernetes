@@ -5,6 +5,9 @@
 # Variables
 CALICO_VER="$1"
 
+# Set kube-config for this script's context
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
 # Check for parameter
 if [ -z "$CALICO_VER" ]; then
   echo "Error: No Calico version provided."
@@ -14,7 +17,3 @@ fi
 
 # Install Calico CNI
 kubectl apply -f "https://raw.githubusercontent.com/projectcalico/calico/$CALICO_VER/manifests/calico.yaml"
-
-# Verify
-kubectl get pods -n kube-system | grep calico
-# kubectl get pods -n calico-system

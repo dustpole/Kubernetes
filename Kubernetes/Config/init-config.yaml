@@ -17,7 +17,7 @@ apiServer:
     - name: enable-admission-plugins
       value: NodeRestriction,PodSecurity,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
     - name: anonymous-auth
-      value: "false"
+      value: "true" 
     - name: audit-log-path
       value: /var/log/kubernetes/audit.log
     - name: audit-policy-file
