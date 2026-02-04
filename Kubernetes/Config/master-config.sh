@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Script to install and configure a Kubernetes Control Plane using kubeadm
 # Written by Dustin Pollreis
-# Targets: Ubuntu 22.04 / 24.04 LTS, single-node control-plane, containerd runtime
+# Targets: Ubuntu 24.04 LTS, single-node control-plane, containerd runtime
 # Kubernetes version: 1.35
 
 set -euo pipefail  # Exit on error, undefined vars, pipeline failures
