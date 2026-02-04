@@ -11,7 +11,7 @@ KUBERNETES_VER="v1.35"
 CALICO_VER="v3.31.3"
 MetalLB_VER="v0.15.3"
 
-echo "Starting Kubernetes 1.35 single-node setup..."
+echo "Starting Kubernetes setup..."
 
 # Install basic tools
 apt-get update
@@ -63,7 +63,7 @@ apt-get install -y containerd.io
 # ufw allow 10259/tcp   # kube-scheduler
 # ufw allow 10257/tcp   # kube-controller-manager
 # ufw allow 2222/tcp    # SSH
-# ufw --force enable    # Only if you want ufw active
+# ufw --force enable    # ufw enable
 
 # Generate default containerd config
 mkdir -p /etc/containerd
