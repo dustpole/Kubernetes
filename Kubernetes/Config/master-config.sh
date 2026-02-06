@@ -105,7 +105,7 @@ mkdir -p "/root/.kube"
 cp /etc/kubernetes/admin.conf /root/.kube/config
 
 # Remove the master node taint to allow scheduling pods on control-plane node
-kubectl taint nodes k8s-master-02 node-role.kubernetes.io/control-plane:NoSchedule-
+kubectl taint nodes k8s-master-01 node-role.kubernetes.io/control-plane:NoSchedule-
 
 sleep 10
 
@@ -123,16 +123,18 @@ kubectl get pods -n kube-system | grep calico
 echo "Installing MetalLB ${MetalLB_VER} (Layer 2 mode)..."
 ./install-metallb.sh "$MetalLB_VER"
 
+sleep 10
+
 # Create the secret key for memberlist protocol
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 
-sleep 30
+sleep 45
 
 # Apply metallb config
 kubectl apply -f metallb-pool.yaml
 kubectl apply -f metallb-l2-advertisement.yaml
 
-sleep 10
+sleep 20
 
 # Check MetalLB pods
 kubectl get pods -n metallb-system
