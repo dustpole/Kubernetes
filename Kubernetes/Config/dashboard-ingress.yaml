@@ -5,12 +5,15 @@ metadata:
   namespace: traefik
 spec:
   entryPoints:
-    - websecure          # Use your exposed HTTPS entrypoint (port 443)
+    - websecure
+  tls: {}
   routes:
-    - match: Host(`10.0.3.200`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+    - match: Host(`traefik.k8s.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
       services:
         - name: api@internal
           kind: TraefikService
       middlewares:
         - name: dashboard-auth
+
+# kubectl rollout restart ds/traefik -n traefik

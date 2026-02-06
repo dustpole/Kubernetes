@@ -24,3 +24,6 @@ kubectl apply -f dashboard-ingress.yaml
 
 # Install Traefik using Helm
 helm upgrade --install traefik traefik/traefik --namespace traefik -f traefik-deployment.yaml
+
+# Restart Traefik DaemonSet to apply changes 
+# kubectl rollout restart ds/traefik -n traefik
