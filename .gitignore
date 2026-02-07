@@ -1,2 +1,2 @@
 # Files to ignore.
-/Config/dashboard-secret.yaml
+/Kubernetes/Config/dashboard-secret.yaml
