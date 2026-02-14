@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: dashboard-ip-allowlist
+  namespace: traefik
+spec:
+  ipAllowList:
+    sourceRange:
+      - 198.51.100.0/24     # tailscale network
+      - 10.0.0.0/8          # internal network
