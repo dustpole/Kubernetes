@@ -1,6 +1,7 @@
 # Files to ignore.
-/Config/dashboard-secret.yaml
-/Config/worker-config.sh
+dashboard-secret.yaml
+worker-config.sh
+dashboard-ip-allowlist.yaml
 # Ignore the .env file which may contain sensitive information.
 /.env
 # Ignore log files.
