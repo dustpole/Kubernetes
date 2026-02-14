@@ -7,7 +7,7 @@
 set -euo pipefail  # Exit on error, undefined vars, pipeline failures
 
 # Variables
-KUBERNETES_VER="v1.35"
+KUBERNETES_VER="1.35"
 CALICO_VER="3.31.3"
 MetalLB_VER="0.15.3"
 
@@ -77,9 +77,9 @@ systemctl enable --now containerd
 
 # Install Kubernetes packages (from official pkgs.k8s.io repo)
 apt-get update && apt-get install -y apt-transport-https ca-certificates curl gpg
-curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBERNETES_VER}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VER}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBERNETES_VER}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VER}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update
 apt-get install -y kubelet kubeadm kubectl
