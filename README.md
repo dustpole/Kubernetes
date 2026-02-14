@@ -754,7 +754,8 @@ kubectl get secret -n traefik dashboard-auth
 3. **Enable logging** - Deploy ELK stack or Loki for log aggregation
 4. **Backup strategy** - Regularly backup your cluster etcd and workloads
 5. **Stay updated** - Keep Kubernetes and component versions current with security patches
-
+6. **Configure Firewall** - Fine-tune the local UFW rules on the Kubernetes nodes.
+7. **Automatic Updating** - Automatic updating of all software packages on the nodes.
 ---
 
 ## License & Attribution
