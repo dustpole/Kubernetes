@@ -8,8 +8,8 @@ set -euo pipefail  # Exit on error, undefined vars, pipeline failures
 
 # Variables
 KUBERNETES_VER="v1.35"
-CALICO_VER="v3.31.3"
-MetalLB_VER="v0.15.3"
+CALICO_VER="3.31.3"
+MetalLB_VER="0.15.3"
 
 echo "Starting Kubernetes setup..."
 

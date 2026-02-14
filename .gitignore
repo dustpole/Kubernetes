@@ -1,2 +1,21 @@
 # Files to ignore.
 /Config/dashboard-secret.yaml
+/Config/worker-config.sh
+# Ignore the .env file which may contain sensitive information.
+/.env
+# Ignore log files.
+/logs/*
+# Ignore temporary files.
+/tmp/*
+# Ignore build artifacts.
+/build/*
+# Ignore node_modules directory if using Node.js.
+/node_modules/
+# Ignore Python virtual environment directory if using Python.
+/venv/
+# Ignore IDE specific files.
+/.idea/
+.vscode/
+# Ignore OS generated files.
+.DS_Store
+Thumbs.db
