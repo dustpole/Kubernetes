@@ -9,11 +9,11 @@ A comprehensive, production-inspired Kubernetes cluster setup designed for home 
 - [Prerequisites](#prerequisites)
 - [Installation Guide](#installation-guide)
   - [Phase 1: Control Plane Setup](#phase-1-control-plane-setup)
-  - [Phase 2: Worker Node Setup](#phase-2-worker-node-setup)
-  - [Phase 3: Network Layer](#phase-3-network-layer)
-  - [Phase 4: Load Balancing](#phase-4-load-balancing)
-  - [Phase 5: Ingress Controller](#phase-5-ingress-controller)
-  - [Phase 6: Package Manager](#phase-6-package-manager)
+  - [Phase 2: Network Layer](#phase-3-network-layer)
+  - [Phase 3: Load Balancing](#phase-4-load-balancing)
+  - [Phase 4: Ingress Controller](#phase-5-ingress-controller)
+  - [Phase 5: Package Manager](#phase-6-package-manager)
+  - [Phase 6: Worker Node Setup](#phase-2-worker-node-setup)
 - [File Directory & Purpose](#file-directory--purpose)
 - [Configuration Details](#configuration-details)
 - [Security Considerations](#security-considerations)
@@ -165,81 +165,7 @@ MetalLB_VER="0.15.3"
 
 ---
 
-### Phase 2: Worker Node Setup
-
-**File**: `worker-config.example` → `worker-config.sh`
-
-**Purpose**: Configure and join a node to the Kubernetes cluster as a worker.
-
-**Important**: This is an **example template**. You must copy and customize it for each worker node.
-
-**Customization Steps**:
-
-1. **Copy the template**:
-   ```bash
-   cp worker-config.example worker-config.sh
-   ```
-
-2. **Edit the variables**:
-   ```bash
-   nano worker-config.sh
-   ```
-   
-   Update these critical values:
-   - `DISCOVERY_TOKEN_HASH`: From `kubeadm init` output (on master node)
-   - `TOKEN`: Bootstrap token (from master `kubeadm init` output)
-   - `CONTROL_PLANE_IP`: Master node IP (default: `10.0.3.2`)
-
-3. **Obtain join credentials** (run on master):
-   ```bash
-   # View existing tokens and join command
-   kubeadm token list
-   
-   # If token expired, create new one
-   kubeadm token create --print-join-command
-   ```
-
-**What This Script Does**:
-
-1. **System Preparation** (identical to master):
-   - Basic tools installation
-   - Timezone configuration
-   - Swap removal
-
-2. **Kernel & Network Setup** (identical to master):
-   - Module loading
-   - sysctl configuration
-   - cgroup v2 verification
-
-3. **containerd & Kubernetes Installation** (identical to master):
-   - Container runtime setup
-   - kubelet service installation
-   - kubectl for local management
-
-4. **Cluster Join**:
-   - Uses bootstrap token to securely join the control plane
-   - Updates kubeadm configuration with discovery token hash
-   - Registers worker with control plane
-   - Kubelet begins reporting node status
-
-**How to Run**:
-
-```bash
-# On each worker node
-chmod +x worker-config.sh
-sudo ./worker-config.sh
-```
-
-**Verify Worker Registration** (run on master):
-
-```bash
-kubectl get nodes
-# Should show worker node with "Ready" status
-```
-
----
-
-### Phase 3: Network Layer - Calico CNI
+### Phase 2: Network Layer - Calico CNI
 
 **Files**: 
 - `Calico/install-calico.sh`
@@ -299,7 +225,7 @@ kubectl run -it --rm --image=busybox test-pod -- sh
 
 ---
 
-### Phase 4: Load Balancing - MetalLB
+### Phase 3: Load Balancing - MetalLB
 
 **Files**:
 - `MetalLB/install-metallb.sh`
@@ -390,7 +316,7 @@ kubectl get svc nginx
 
 ---
 
-### Phase 5: Ingress Controller - Traefik
+### Phase 4: Ingress Controller - Traefik
 
 **Files**:
 - `Traefik/install-traefik.sh`
@@ -523,7 +449,7 @@ kubectl get ingress -A
 
 ---
 
-### Phase 6: Package Manager - Helm
+### Phase 5: Package Manager - Helm
 
 **File**: `Helm/install-helm.sh`
 
@@ -573,6 +499,80 @@ helm upgrade my-release bitnami/nginx --set replicaCount=3
 
 # Uninstall a release
 helm uninstall my-release
+```
+
+---
+
+### Phase 6: Worker Node Setup
+
+**File**: `worker-config.example` → `worker-config.sh`
+
+**Purpose**: Configure and join a node to the Kubernetes cluster as a worker.
+
+**Important**: This is an **example template**. You must copy and customize it for each worker node.
+
+**Customization Steps**:
+
+1. **Copy the template**:
+   ```bash
+   cp worker-config.example worker-config.sh
+   ```
+
+2. **Edit the variables**:
+   ```bash
+   nano worker-config.sh
+   ```
+   
+   Update these critical values:
+   - `DISCOVERY_TOKEN_HASH`: From `kubeadm init` output (on master node)
+   - `TOKEN`: Bootstrap token (from master `kubeadm init` output)
+   - `CONTROL_PLANE_IP`: Master node IP (default: `10.0.3.2`)
+
+3. **Obtain join credentials** (run on master):
+   ```bash
+   # View existing tokens and join command
+   kubeadm token list
+   
+   # If token expired, create new one
+   kubeadm token create --print-join-command
+   ```
+
+**What This Script Does**:
+
+1. **System Preparation** (identical to master):
+   - Basic tools installation
+   - Timezone configuration
+   - Swap removal
+
+2. **Kernel & Network Setup** (identical to master):
+   - Module loading
+   - sysctl configuration
+   - cgroup v2 verification
+
+3. **containerd & Kubernetes Installation** (identical to master):
+   - Container runtime setup
+   - kubelet service installation
+   - kubectl for local management
+
+4. **Cluster Join**:
+   - Uses bootstrap token to securely join the control plane
+   - Updates kubeadm configuration with discovery token hash
+   - Registers worker with control plane
+   - Kubelet begins reporting node status
+
+**How to Run**:
+
+```bash
+# On each worker node
+chmod +x worker-config.sh
+sudo ./worker-config.sh
+```
+
+**Verify Worker Registration** (run on master):
+
+```bash
+kubectl get nodes
+# Should show worker node with "Ready" status
 ```
 
 ---
