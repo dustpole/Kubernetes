@@ -266,7 +266,7 @@ metadata:
   name: default
 spec:
   addresses:
-  - 10.0.3.200-10.0.3.250  # IP range for LoadBalancer services
+  - 10.0.3.200-10.0.3.210  # IP range for LoadBalancer services
 ```
 
 **metallb-l2-advertisement.yaml** - Announces IPs:
@@ -652,7 +652,7 @@ apiServer:
 - **Pod CIDR**: `10.244.0.0/16` - Pods get IPs in this range
 - **Service CIDR**: `10.96.0.0/12` - Kubernetes services get IPs here (usually)
 - **Control Plane IP**: `10.0.3.2` - Master node static IP
-- **MetalLB Pool**: `10.0.3.200-10.0.3.250` - LoadBalancer service IP allocation
+- **MetalLB Pool**: `10.0.3.200-10.0.3.210` - LoadBalancer service IP allocation
 
 ---
 
