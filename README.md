@@ -41,29 +41,29 @@ This Kubernetes homelab is built on **Kubernetes 1.35** with a containerized arc
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Traefik Ingress Controller               │
-│                    (HTTP/HTTPS Routing)                      │
+│                     Traefik Ingress Controller              │
+│                    (HTTP/HTTPS Routing)                     │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                     MetalLB Load Balancer                    │
-│                  (L2 Advertisement Protocol)                 │
+│                     MetalLB Load Balancer                   │
+│                  (L2 Advertisement Protocol)                │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌──────────────────────────────────────────────────────────────┐
-│                      Calico CNI Network                       │
+│                      Calico CNI Network                      │
 │           (Pod-to-Pod Communication & Network Policy)        │
 └──────────────────────────────────────────────────────────────┘
                               ↓
 ┌──────────────────────────────────────────────────────────────┐
-│                  Kubernetes API Server                        │
+│                  Kubernetes API Server                       │
 │                  (Control Plane - 10.0.3.2)                  │
 │              RBAC, Pod Security, Admission Control           │
 └──────────────────────────────────────────────────────────────┘
                               ↓
 ┌──────────────────────────────────────────────────────────────┐
-│                    Worker Nodes                               │
-│                  (Pod Scheduling & Execution)                │
+│                        Worker Node                          │
+│          (10.0.3.3 - Pod Scheduling & Execution)             │
 │              containerd Runtime | kubelet Service            │
 └──────────────────────────────────────────────────────────────┘
 ```
