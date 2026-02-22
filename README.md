@@ -11,9 +11,8 @@
 
 # Kubernetes Homelab Infrastructure
 
-This repository documents and automates my **personal Kubernetes homelab**, built to closely resemble real-world production clusters while remaining practical for home and lab environments.
+This repository documents and automates my **personal Kubernetes homelab**, built to somewhat resemble real-world production clusters while remaining practical for home and lab environments.
 
-The goal is **not** “hello-world Kubernetes.”  
 The goal is to understand how Kubernetes behaves **when you own the entire stack** — from kernel flags and cgroups all the way up to ingress routing and load-balanced services.
 
 Everything here exists because I needed it, broke it, fixed it, and wanted it repeatable.
@@ -42,36 +41,36 @@ If you can run *this* cluster reliably, cloud-managed Kubernetes becomes far les
 ---
 
 ## High-Level Architecture
-
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Traefik Ingress Controller               │
-│          HTTP / HTTPS Routing + Middleware + Dashboard       │
+│          HTTP / HTTPS Routing + Middleware + Dashboard      │
 └─────────────────────────────────────────────────────────────┘
-│
-▼
+                              │
+                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     MetalLB Load Balancer                   │
-│           L2 ARP Advertisement for Service IPs               │
+│           L2 ARP Advertisement for Service IPs              │
 └─────────────────────────────────────────────────────────────┘
-│
-▼
+                              │
+                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                       Calico CNI Network                    │
-│        Pod Networking, IPAM, NetworkPolicy Enforcement       │
+│        Pod Networking, IPAM, NetworkPolicy Enforcement      │
 └─────────────────────────────────────────────────────────────┘
-│
-▼
+                              │
+                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                  Kubernetes Control Plane                   │
 │     kube-apiserver | etcd | scheduler | controller-manager  │
 └─────────────────────────────────────────────────────────────┘
-│
-▼
+                              │
+                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                        Worker Nodes                         │
 │            kubelet + containerd + Pod Workloads             │
 └─────────────────────────────────────────────────────────────┘
-
+```
 ---
 ## Design Choices (and Why)
 
