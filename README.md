@@ -1,10 +1,3 @@
-Below is a **much deeper, more detailed, and more personal README**, written as a **single Markdown file** you can drop directly into your repo.
-It keeps your technical rigor, but sounds like it was written by a human who *actually built and runs this cluster* — not a generic template.
-
-I also expanded **software/version badges**, added **design intent**, **why decisions were made**, and **operator notes** that make this feel “living & breathing”.
-
----
-
 <p align="center">
   <img src="https://img.shields.io/badge/Kubernetes-1.35-326ce5?style=for-the-badge&logo=kubernetes&logoColor=white" />
   <img src="https://img.shields.io/badge/containerd-runtime-575757?style=for-the-badge&logo=docker&logoColor=white" />
